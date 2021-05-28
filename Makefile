@@ -11,14 +11,19 @@ publish-maven:   ## Publish artifacts to Maven Central
 
 test-v1:
 	USE_SSL=1 SERVICES=serverless,kinesis,sns,sqs,iam,cloudwatch mvn -Pawssdkv1 \
-                -Dtest="!cloud.localstack.awssdkv2.*Test" test
+                 -DargLine="-javaagent:thundra-agent-bootstrap.jar"  -Dmaven.test.failure.ignore=true -Dtest="!cloud.localstack.awssdkv2.*Test, !cloud.localstack.docker.*Test" test
 
 test-v2:
 	USE_SSL=1 SERVICES=serverless,kinesis,sns,sqs,iam,cloudwatch mvn -Pawssdkv2 \
-		-Dtest="cloud.localstack.awssdkv2.*Test" test
+		 -DargLine="-javaagent:thundra-agent-bootstrap.jar"  -Dmaven.test.failure.ignore=true -Dtest="cloud.localstack.awssdkv2.*Test" test
+
+test-v3:
+	USE_SSL=1 SERVICES=serverless,kinesis,sns,sqs,iam,cloudwatch mvn -Pawssdkv1 \
+		 -DargLine="-javaagent:thundra-agent-bootstrap.jar"  -Dmaven.test.failure.ignore=true -Dtest="cloud.localstack.docker.*Test" -DrunOrder=alphabetical test
 
 test:            ## Run Java/JUnit tests for AWS SDK v1 and v2
 	make test-v2
 	make test-v1
+	make test-v3
 
 .PHONY: usage clean install test test-v1 test-v2
